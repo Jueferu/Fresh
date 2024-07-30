@@ -1,5 +1,5 @@
 # Fresh
-A RLGym-PPO bot that just won't leave you alone.
+A RLGym-PPO 2v2 bot that just won't leave you alone.
 
 ## What to expect
 This is my FIRST bot.
