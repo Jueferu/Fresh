@@ -3,6 +3,7 @@ import numpy as np
 def build_rocketsim_env():
     import rlgym_sim
     from rlgym_sim.utils.state_setters import RandomState
+    from rlgym_sim.utils import common_values
     from rlgym_sim.utils.terminal_conditions.common_conditions import NoTouchTimeoutCondition, GoalScoredCondition
 
     from advanced_adapted_obs import AdvancedAdaptedObs
@@ -20,7 +21,10 @@ def build_rocketsim_env():
 
     reward_fn = BabyReward()
     action_parser = LookupAction()
-    obs_builder = AdvancedAdaptedObs()
+    obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
+            ang_coef=1 / np.pi,
+            lin_vel_coef=1 / common_values.CAR_MAX_SPEED,
+            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL)
     state_setter = RandomState()
 
     env = rlgym_sim.make(tick_skip=tick_skip,
@@ -38,7 +42,7 @@ if __name__ == "__main__":
     from rlgym_ppo import Learner
 
     # processes
-    n_proc = 48
+    n_proc = 32
 
     # educated guess - could be slightly higher or lower
     min_inference_size = max(1, int(round(n_proc * 0.9)))
@@ -61,6 +65,5 @@ if __name__ == "__main__":
                       critic_layer_sizes=[2048, 2048, 1024],
                       timestep_limit=10e15,
                       policy_lr=2e-4,
-                      critic_lr=2e-4,
-                      render=True)
+                      critic_lr=2e-4)
     learner.learn()
