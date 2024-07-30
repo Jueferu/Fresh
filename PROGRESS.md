@@ -138,3 +138,7 @@ Did a major overhaul of the bot and opened this github page (hello reader)
 
 Guess what? Of course you knew: BOT RESTART
 
+## 5:17 PM
+
+Finished setting up the github
+Time to train
