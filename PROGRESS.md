@@ -131,3 +131,10 @@ Restared the bot again lmaoo :crying:
 The reward that i was training him on for 200M steps was wrong
 
 Anyways, I fixed it.
+
+## 4:49 PM
+
+Did a major overhaul of the bot and opened this github page (hello reader)
+
+Guess what? Of course you knew: BOT RESTART
+
