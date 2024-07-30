@@ -126,20 +126,17 @@ Trying to fix the lookup act didn't work
 I just have to assume the bot hasn't trained enough
 
 ## 1:06 PM
-
 Restared the bot again lmaoo :crying:
 The reward that i was training him on for 200M steps was wrong
 
 Anyways, I fixed it.
 
 ## 4:49 PM
-
 Did a major overhaul of the bot and opened this github page (hello reader)
 
 Guess what? Of course you knew: BOT RESTART
 
 ## 5:17 PM
-
 Finished setting up the github
 Time to train
 
@@ -148,3 +145,16 @@ OH HAHAHA
 very funny
 i logged it and it fixed itself
 very funny python
+
+## 6:09 PM
+20m steps reached
+time to test in rlbot
+
+## 6:20 PM
+rocket league keeps crashing for some reason, will try without bakesmod
+
+IT WORKS
+IT'S ALIVEE YESS
+(it's still bad lmao)
+
+time to train more
