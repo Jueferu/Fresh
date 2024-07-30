@@ -142,3 +142,9 @@ Guess what? Of course you knew: BOT RESTART
 
 Finished setting up the github
 Time to train
+
+Reward function returning nan?
+OH HAHAHA
+very funny
+i logged it and it fixed itself
+very funny python
