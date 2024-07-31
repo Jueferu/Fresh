@@ -172,4 +172,5 @@ lmaoo
 We have reached 27m steps
 I'll test in rlbot just to make sure
 
-https://youtu.be/siOV2oJQGFI
+Youtube footage below
+[![Fresh poorly hitting the ball](https://img.youtube.com/vi/siOV2oJQGFI/0.jpg)](https://www.youtube.com/watch?v=siOV2oJQGFI)
