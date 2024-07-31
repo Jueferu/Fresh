@@ -169,7 +169,7 @@ lmaoo
 
 ## 4:27 PM
 
-We have reached 50m steps
+We have reached 28m steps
 
 I'll test in rlbot just to make sure
 
