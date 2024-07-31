@@ -8,7 +8,7 @@ def build_rocketsim_env():
 
     from advanced_adapted_obs import AdvancedAdaptedObs
     from lookup_act import LookupAction
-    from rewards.BabyReward import BabyReward
+    from training.rewards.ChildReward import BabyReward
 
     spawn_opponents = True
     team_size = 2
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # educated guess - could be slightly higher or lower
     min_inference_size = max(1, int(round(n_proc * 0.9)))
 
-    ts_per_iteration = 50_000
+    ts_per_iteration = 100_000
 
     learner = Learner(build_rocketsim_env,
                       n_proc=n_proc,

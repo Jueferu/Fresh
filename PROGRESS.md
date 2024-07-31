@@ -184,3 +184,9 @@ Time to test!!
 [![Fresh properly hitting the ball](https://img.youtube.com/vi/QDZayFliHsE/0.jpg)](https://www.youtube.com/watch?v=QDZayFliHsE)
 
 Time to move foward in the training procedure
+
+## 6:03 PM
+
+OK!
+Just finished writing the new training
+Time to start
