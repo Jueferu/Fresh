@@ -1,5 +1,5 @@
 # Fresh
-A RLGym-PPO 2v2 bot that just won't leave you alone.
+The 2v2 bot that keeps it cool and plays it sharp.
 
 ## What to expect
 This is my FIRST bot.
@@ -7,3 +7,4 @@ While I am an experienced programmer, I mainly use Lua and know just the core co
 
 ## Progress
 Go to the [progress file](PROGRESS.md) to see my sanity slowly decreasing trying to do this bot.
+
