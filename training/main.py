@@ -8,7 +8,7 @@ def build_rocketsim_env():
 
     from advanced_adapted_obs import AdvancedAdaptedObs
     from lookup_act import LookupAction
-    from training.rewards.ChildReward import BabyReward
+    from rewards.ChildReward import ChildReward
 
     spawn_opponents = True
     team_size = 2
@@ -19,7 +19,7 @@ def build_rocketsim_env():
 
     terminal_conditions = [NoTouchTimeoutCondition(timeout_ticks), GoalScoredCondition()]
 
-    reward_fn = BabyReward()
+    reward_fn = ChildReward()
     action_parser = LookupAction()
     obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
             ang_coef=1 / np.pi,
