@@ -175,3 +175,12 @@ I'll test in rlbot just to make sure
 Youtube footage below
 
 [![Fresh poorly hitting the ball](https://img.youtube.com/vi/siOV2oJQGFI/0.jpg)](https://www.youtube.com/watch?v=siOV2oJQGFI)
+
+## 5:38 PM
+
+We have reached 50m steps
+Time to test!!
+
+[![Fresh properly hitting the ball](https://img.youtube.com/vi/QDZayFliHsE/0.jpg)](https://www.youtube.com/watch?v=QDZayFliHsE)
+
+Time to move foward in the training procedure
