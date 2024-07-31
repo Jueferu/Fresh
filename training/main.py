@@ -13,7 +13,7 @@ def build_rocketsim_env():
     spawn_opponents = True
     team_size = 2
     game_tick_rate = 120
-    tick_skip = 1
+    tick_skip = 8
     timeout_seconds = 30
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 

@@ -77,6 +77,5 @@ class BabyReward(RewardFunction):
         event_reward = self.event_reward.get_reward(player, state, previous_action) * 50
 
         net_reward = in_air_reward + speed_toward_ball_reward + face_toward_ball_reward + event_reward
-        print(f"Reward: {net_reward}")
         
         return net_reward

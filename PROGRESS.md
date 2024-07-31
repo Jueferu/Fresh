@@ -158,3 +158,11 @@ IT'S ALIVEE YESS
 (it's still bad lmao)
 
 time to train more
+
+# 07/31/2024
+
+So we have reached 25m steps AND I JUST REALISED I HAVE BEEN TRAINING THE BOT ON 1 TICK SKIP
+:sob:
+
+that's why i only reached 25m now
+lmaoo
