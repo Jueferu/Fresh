@@ -169,8 +169,7 @@ lmaoo
 
 ## 4:27 PM
 
-We have reached 50m steps
-
+We have reached 27m steps
 I'll test in rlbot just to make sure
 
-https://github.com/user-attachments/assets/47aa160c-4d41-40e9-98b7-c1dfbac5e129
+https://youtu.be/siOV2oJQGFI
