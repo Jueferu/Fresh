@@ -169,8 +169,9 @@ lmaoo
 
 ## 4:27 PM
 
-We have reached 28m steps
-
+We have reached 27m steps
 I'll test in rlbot just to make sure
 
-[https://github.com/Jueferu/Fresh/blob/main/videos/Replay%202024-07-31%2016-31-27.mp4](https://github.com/Jueferu/Fresh/blob/main/videos/Replay%202024-07-31%2016-31-27.mp4)
+Youtube footage below
+
+[![Fresh poorly hitting the ball](https://img.youtube.com/vi/siOV2oJQGFI/0.jpg)](https://www.youtube.com/watch?v=siOV2oJQGFI)
