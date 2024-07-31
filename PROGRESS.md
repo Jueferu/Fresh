@@ -166,3 +166,10 @@ So we have reached 25m steps AND I JUST REALISED I HAVE BEEN TRAINING THE BOT ON
 
 that's why i only reached 25m now
 lmaoo
+
+## 4:27 PM
+
+We have reached 50m steps
+I'll test in rlbot just to make sure
+
+[Footage](videos\Replay 2024-07-31 16-31-27.mp4)
