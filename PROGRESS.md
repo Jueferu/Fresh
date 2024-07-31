@@ -173,4 +173,4 @@ We have reached 50m steps
 
 I'll test in rlbot just to make sure
 
-[https://github.com/Jueferu/Fresh/blob/main/videos/Replay%202024-07-31%2016-31-27.mp4](https://github.com/Jueferu/Fresh/blob/main/videos/Replay%202024-07-31%2016-31-27.mp4)
+https://github.com/user-attachments/assets/47aa160c-4d41-40e9-98b7-c1dfbac5e129
