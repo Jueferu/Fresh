@@ -203,3 +203,8 @@ IMPORTANT: ALWAYS CHECK IF RLGYM-PPO HAS LOADED THE LATEST MODEL
 We have reached 415m timesteps
 
 Time to test
+
+[![Fresh knows how to play](https://img.youtube.com/vi/g3AoGBgA-cM/0.jpg)](https://www.youtube.com/watch?v=g3AoGBgA-cM)
+
+Ok... they're not that good, I'll try to refactor the rewards
+

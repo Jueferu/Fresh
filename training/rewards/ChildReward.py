@@ -3,12 +3,9 @@
 import numpy as np
 from rlgym_sim.utils import RewardFunction
 from rlgym_sim.utils.gamestates import GameState, PlayerData
-from rlgym_sim.utils.common_values import CAR_MAX_SPEED
 
-from rlgym_sim.utils.reward_functions.common_rewards import EventReward
+from rlgym_sim.utils.reward_functions.common_rewards import EventReward, VelocityBallToGoalReward, LiuDistanceBallToGoalReward
 from rlgym_sim.utils.reward_functions import CombinedReward
-
-KPH_TO_VEL = 250/9
 
 class InAirReward(RewardFunction):
     def __init__(self):
@@ -19,27 +16,6 @@ class InAirReward(RewardFunction):
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action) -> float:
         return 0 if player.on_ground else 1
-
-class SpeedTowardBallReward(RewardFunction):
-    def __init__(self):
-        super().__init__()
-
-    def reset(self, initial_state: GameState):
-        pass 
-
-    def get_reward(self, player: PlayerData, state: GameState, previous_action) -> float:
-        player_vel = player.car_data.linear_velocity
-        pos_diff = state.ball.position - player.car_data.position
-        dist_to_ball = np.linalg.norm(pos_diff)
-        dir_to_ball = pos_diff / dist_to_ball
-        speed_toward_ball = np.dot(player_vel, dir_to_ball)
-        
-        speed_toward_ball = max(0, speed_toward_ball)
-        reward = speed_toward_ball / CAR_MAX_SPEED
-
-        if np.isnan(reward):
-            reward = 0
-        return reward
     
 class FaceTowardBallReward(RewardFunction):
     def __init__(self):
@@ -74,30 +50,17 @@ class PossesionReward(RewardFunction):
         closest_player = min(state.players, key=lambda x: np.linalg.norm(x.car_data.position - state.ball.position))
         return 1 if closest_player.team_num == player.team_num else 0
 
-class TouchBallScaledByHitForceReward(RewardFunction):
+class DistanceFromTeammatesReward(RewardFunction):
+    def __init__(self, max_distance=100):
+        self.max_distance = max_distance
 
-    def __init__(self):
-        super().__init__()
-        self.max_hit_speed = 130 * KPH_TO_VEL
-        self.last_ball_vel = None
-        self.cur_ball_vel = None
-
-    # game reset, after terminal condition
     def reset(self, initial_state: GameState):
-        self.last_ball_vel = initial_state.ball.linear_velocity
-        self.cur_ball_vel = initial_state.ball.linear_velocity
-
-    # happens 
-    def pre_step(self, state: GameState):
-        self.last_ball_vel = self.cur_ball_vel
-        self.cur_ball_vel = state.ball.linear_velocity
+        pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
-        if player.ball_touched:
-            reward = np.linalg.norm(self.cur_ball_vel - self.last_ball_vel) / self.max_hit_speed
-            return reward
-        return 0
-    
+        teammates = [p for p in state.players if p.team_num == player.team_num and p.car_id != player.car_id]
+        closest_teamate = min(teammates, key=lambda x: np.linalg.norm(x.car_data.position - player.car_data.position))
+        return 1 - np.linalg.norm(closest_teamate.car_data.position - player.car_data.position) / self.max_distance
 class ChildReward(RewardFunction):
     def __init__(self, agression_bias=.2) -> None:
         super().__init__()
@@ -108,11 +71,12 @@ class ChildReward(RewardFunction):
         # why bother doing everything manually when you can just use CombinedReward
         self.combined_reward = CombinedReward.from_zipped(
             (InAirReward(), .05),
-            (SpeedTowardBallReward(), 1),
+            (VelocityBallToGoalReward(), 1),
             (FaceTowardBallReward(), .5),
-            (SaveBoostReward(), 1),
-            (PossesionReward(), 2),
-            (TouchBallScaledByHitForceReward(), 2),
+            (SaveBoostReward(), .5),
+            (PossesionReward(), .5),
+            (LiuDistanceBallToGoalReward(), 1.5),
+            (DistanceFromTeammatesReward, 1)
             (EventReward(team_goal=goal_reward, concede=concede_reward), 10)
         )
     
