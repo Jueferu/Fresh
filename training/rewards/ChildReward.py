@@ -60,7 +60,7 @@ class FaceTowardBallReward(RewardFunction):
         reward = np.dot(player_forward, dir_to_ball)
         if np.isnan(reward):
             reward = 0
-        return reward
+        return max(0, reward)
 
 class SaveBoostReward(RewardFunction):
     def reset(self, initial_state: GameState):

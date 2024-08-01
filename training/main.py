@@ -55,7 +55,7 @@ if __name__ == "__main__":
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
                       exp_buffer_size=ts_per_iteration*2,
-                      ppo_minibatch_size= 200_000 / 4,
+                      ppo_minibatch_size= 50_000,
                       ppo_ent_coef=0.01,
                       ppo_epochs=2,
                       standardize_returns=True,
