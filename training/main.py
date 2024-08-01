@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 def build_rocketsim_env():
     import rlgym_sim
@@ -11,7 +12,7 @@ def build_rocketsim_env():
     from rewards.ChildReward import ChildReward
 
     spawn_opponents = True
-    team_size = 2
+    team_size = random.randint(1, 2)
     game_tick_rate = 120
     tick_skip = 8
     timeout_seconds = 30
@@ -24,7 +25,7 @@ def build_rocketsim_env():
     obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
             ang_coef=1 / np.pi,
             lin_vel_coef=1 / common_values.CAR_MAX_SPEED,
-            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL)
+            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL, player_padding=2, expanding=False)
     state_setter = RandomState()
 
     env = rlgym_sim.make(tick_skip=tick_skip,
@@ -36,17 +37,16 @@ def build_rocketsim_env():
                          action_parser=action_parser,
                          state_setter=state_setter)
 
+    import rocketsimvis_rlgym_sim_client as rsv
+    type(env).render = lambda self: rsv.send_state_to_rocketsimvis(self._prev_state)
+
     return env
 
 if __name__ == "__main__":
     from rlgym_ppo import Learner
 
-    # processes
-    n_proc = 2
-
-    # educated guess - could be slightly higher or lower
+    n_proc = 35
     min_inference_size = max(1, int(round(n_proc * 0.9)))
-
     ts_per_iteration = 200_000
 
     learner = Learner(build_rocketsim_env,
@@ -55,15 +55,16 @@ if __name__ == "__main__":
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
                       exp_buffer_size=ts_per_iteration*2,
-                      ppo_minibatch_size=12_500,
+                      ppo_minibatch_size= 200_000 / 4,
                       ppo_ent_coef=0.01,
-                      ppo_epochs=3,
+                      ppo_epochs=2,
                       standardize_returns=True,
                       standardize_obs=False,
-                      save_every_ts=100_000,
+                      save_every_ts=500_000,
                       policy_layer_sizes=[2048, 2048, 1024],
                       critic_layer_sizes=[2048, 2048, 1024],
                       timestep_limit=10e15,
                       policy_lr=1e-4,
-                      critic_lr=1e-4)
+                      critic_lr=1e-4,
+                      render=False)
     learner.learn()

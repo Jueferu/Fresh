@@ -208,3 +208,10 @@ Time to test
 
 Ok... they're not that good, I'll try to refactor the rewards
 
+## 6:21 PM
+We have reached 469m timesteps and V1.29000.
+Time to test
+
+
+They uh.. seem to not want to play anymore?
+Time to retry the rewards again
