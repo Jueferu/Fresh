@@ -190,3 +190,16 @@ Time to move foward in the training procedure
 OK!
 Just finished writing the new training
 Time to start
+
+## 7:01 PM
+
+IMPORTANT: ALWAYS CHECK IF RLGYM-PPO HAS LOADED THE LATEST MODEL
+
+1 hour spent doing nothing. great.
+
+# 8/1/2024
+## 10:34 AM
+
+We have reached 415m timesteps
+
+Time to test
