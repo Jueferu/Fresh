@@ -101,11 +101,9 @@ class ChildReward(RewardFunction):
 
         goal_reward = 1
         concede_reward = -goal_reward * (1 - agression_bias)
-
-        # why bother doing everything manually when you can just use CombinedReward
         self.combined_reward = LogCombinedReward.from_zipped(
             (VelocityBallToGoalReward(), 4),
-            (FaceTowardBallReward(), .5),
+            (FaceTowardBallReward(), 1),
             (SaveBoostReward(), .1),
             (LiuDistanceBallToGoalReward(), 3),
             (SpeedTowardBallReward(), 2),
