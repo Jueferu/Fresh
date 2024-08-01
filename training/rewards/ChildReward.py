@@ -76,7 +76,7 @@ class ChildReward(RewardFunction):
             (SaveBoostReward(), .5),
             (PossesionReward(), .5),
             (LiuDistanceBallToGoalReward(), 1.5),
-            (DistanceFromTeammatesReward, 1)
+            (DistanceFromTeammatesReward(), 1)
             (EventReward(team_goal=goal_reward, concede=concede_reward), 10)
         )
     
