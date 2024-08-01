@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # educated guess - could be slightly higher or lower
     min_inference_size = max(1, int(round(n_proc * 0.9)))
 
-    ts_per_iteration = 100_000
+    ts_per_iteration = 200_000
 
     learner = Learner(build_rocketsim_env,
                       n_proc=n_proc,
@@ -64,6 +64,6 @@ if __name__ == "__main__":
                       policy_layer_sizes=[2048, 2048, 1024],
                       critic_layer_sizes=[2048, 2048, 1024],
                       timestep_limit=10e15,
-                      policy_lr=2e-4,
-                      critic_lr=2e-4)
+                      policy_lr=1e-4,
+                      critic_lr=1e-4)
     learner.learn()
