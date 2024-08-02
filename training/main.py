@@ -3,13 +3,40 @@ import random
 
 def build_rocketsim_env():
     import rlgym_sim
-    from rlgym_sim.utils.state_setters import RandomState
+    
     from rlgym_sim.utils import common_values
     from rlgym_sim.utils.terminal_conditions.common_conditions import NoTouchTimeoutCondition, GoalScoredCondition
+    from rlgym_sim.utils.reward_functions import CombinedReward
 
     from advanced_adapted_obs import AdvancedAdaptedObs
     from lookup_act import LookupAction
-    from rewards.ChildReward import ChildReward
+
+    from state_setters.team_size_setter import TeamSizeSetter
+    from state_setters.weighted_sample_setter import WeightedSampleSetter
+    from state_setters.wall_state import WallPracticeState
+    from state_setters.symmetric_setter import KickoffLikeSetter
+    from state_setters.goalie_state import GoaliePracticeState
+    from rlgym_sim.utils.state_setters import RandomState, DefaultState
+
+    state_setter = TeamSizeSetter(1, WeightedSampleSetter(
+        WallPracticeState(),
+        KickoffLikeSetter(),
+        GoaliePracticeState(),
+        RandomState(),
+        DefaultState()
+    ))
+    
+    from rewards.zero_sum_reward import ZeroSumReward
+    from rewards.velocity_ball_to_goal_reward import VelocityBallToGoalReward
+    from rewards.velocity_player_to_ball_reward import VelocityPlayerToBallReward
+    from rewards.possesion_reward import PossesionReward
+    from rewards.player_face_ball_reward import PlayerFaceBallReward
+    from rewards.player_behind_ball_reward import PlayerBehindBallReward
+
+    player_face_ball_reward = ZeroSumReward(PlayerFaceBallReward(), team_spirit=.5)
+    player_behind_ball_reward = ZeroSumReward(PlayerBehindBallReward(), team_spirit=.5)
+    player_to_ball_reward = ZeroSumReward(VelocityPlayerToBallReward(), team_spirit=.5)
+    ball_to_goal_reward = ZeroSumReward(VelocityBallToGoalReward(), team_spirit=.5)
 
     spawn_opponents = True
     team_size = random.randint(1, 2)
@@ -20,13 +47,18 @@ def build_rocketsim_env():
 
     terminal_conditions = [NoTouchTimeoutCondition(timeout_ticks), GoalScoredCondition()]
 
-    reward_fn = ChildReward()
+    reward_fn = CombinedReward.from_zipped(
+        (player_face_ball_reward, .5),
+        (player_behind_ball_reward, 2),
+        (player_to_ball_reward, 1),
+        (ball_to_goal_reward, 2)
+        (PossesionReward(), .5)
+    )
     action_parser = LookupAction()
     obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
             ang_coef=1 / np.pi,
             lin_vel_coef=1 / common_values.CAR_MAX_SPEED,
             ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL, player_padding=2, expanding=False)
-    state_setter = RandomState()
 
     env = rlgym_sim.make(tick_skip=tick_skip,
                          team_size=team_size,
@@ -45,7 +77,7 @@ def build_rocketsim_env():
 if __name__ == "__main__":
     from rlgym_ppo import Learner
 
-    n_proc = 35
+    n_proc = 32
     min_inference_size = max(1, int(round(n_proc * 0.9)))
     ts_per_iteration = 200_000
 
@@ -55,7 +87,7 @@ if __name__ == "__main__":
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
                       exp_buffer_size=ts_per_iteration*2,
-                      ppo_minibatch_size= 50_000,
+                      ppo_minibatch_size= 12_500,
                       ppo_ent_coef=0.01,
                       ppo_epochs=2,
                       standardize_returns=True,

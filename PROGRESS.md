@@ -215,3 +215,14 @@ Time to test
 
 They uh.. seem to not want to play anymore?
 Time to retry the rewards again
+
+# 8/2/2024
+## 12:07 PM
+Good morning people!
+We have reached 655m timesteps!
+
+They're still, very bad.
+
+## 1:15 PM
+Have done a very major rework of state setters and rewards
+Will just commit all of this and restart my PC due to some memory problems?
