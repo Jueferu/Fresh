@@ -226,3 +226,12 @@ They're still, very bad.
 ## 1:15 PM
 Have done a very major rework of state setters and rewards
 Will just commit all of this and restart my PC due to some memory problems?
+
+
+# 8/3/2024
+## 12:23 PM
+
+It's getting better!
+It's still bad, but getting there.
+
+I think I figured it out. I forgot to add a goal/concede reward.
