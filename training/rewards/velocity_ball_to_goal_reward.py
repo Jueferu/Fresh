@@ -6,7 +6,7 @@ from rlgym_sim.utils.common_values import BLUE_TEAM, ORANGE_TEAM, ORANGE_GOAL_BA
     BLUE_GOAL_BACK, BALL_MAX_SPEED
 
 class VelocityBallToGoalReward(RewardFunction):
-    def __init__(self, own_goal=False, use_scalar_projection=True):
+    def __init__(self, own_goal=False, use_scalar_projection=False):
         super().__init__()
         self.own_goal = own_goal
         self.use_scalar_projection = use_scalar_projection
@@ -28,7 +28,10 @@ class VelocityBallToGoalReward(RewardFunction):
             if np.isnan(inv_t):
                 return 0
             return inv_t
-        else:
-            norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
-            norm_vel = vel / BALL_MAX_SPEED
-            return float(np.dot(norm_pos_diff, norm_vel))
+        
+        norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
+        norm_vel = vel / BALL_MAX_SPEED
+        reward = float(np.dot(norm_pos_diff, norm_vel))
+        if np.isnan(reward):
+            return 0
+        return reward

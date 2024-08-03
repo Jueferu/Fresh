@@ -5,11 +5,12 @@ def build_rocketsim_env():
     import rlgym_sim
     
     from rlgym_sim.utils import common_values
-    from rlgym_sim.utils.terminal_conditions.common_conditions import NoTouchTimeoutCondition, GoalScoredCondition
     from rlgym_sim.utils.reward_functions import CombinedReward
 
     from advanced_adapted_obs import AdvancedAdaptedObs
     from lookup_act import LookupAction
+
+    from game_condition import GameCondition
 
     from state_setters.team_size_setter import TeamSizeSetter
     from state_setters.weighted_sample_setter import WeightedSampleSetter
@@ -38,6 +39,10 @@ def build_rocketsim_env():
     from rewards.speedflip_kickoff_reward import SpeedflipKickoffReward
     from rewards.allign_ball_reward import AlignBallGoal
     from rewards.air_reward import AirReward
+    from rewards.possesion_reward import PossesionReward
+    from rewards.player_velocity_reward import PlayerVelocityReward
+    from rewards.goal_speed_and_placement_reward import GoalSpeedAndPlacementReward
+    from rewards.dribble_reward import DribbleReward
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward
 
@@ -46,13 +51,14 @@ def build_rocketsim_env():
     concede_reward = -goal_reward * (1 - aggression_bias)
 
     event_reward = EventReward(goal=goal_reward, concede=concede_reward)
-    player_face_ball_reward = DistributeRewards(PlayerFaceBallReward(), team_spirit=.5)
-    player_behind_ball_reward = DistributeRewards(PlayerBehindBallReward(), team_spirit=.5)
-    player_to_ball_reward = DistributeRewards(VelocityPlayerToBallReward(), team_spirit=.5)
-    ball_to_goal_reward = DistributeRewards(VelocityBallToGoalReward(), team_spirit=.5)
-    player_is_closest_ball_reward = DistributeRewards(PlayerIsClosestBallReward(), team_spirit=.5)
-    touch_ball_hitforce_reward = DistributeRewards(TouchBallRewardScaledByHitForce(), team_spirit=.5)
-    speedflip_kickoff_reward = DistributeRewards(SpeedflipKickoffReward(), team_spirit=.5)
+    player_face_ball_reward = DistributeRewards(PlayerFaceBallReward(), team_spirit=1)
+    player_behind_ball_reward = DistributeRewards(PlayerBehindBallReward(), team_spirit=1)
+    player_to_ball_reward = DistributeRewards(VelocityPlayerToBallReward(), team_spirit=1)
+    ball_to_goal_reward = DistributeRewards(VelocityBallToGoalReward(), team_spirit=1)
+    # player_is_closest_ball_reward = DistributeRewards(PlayerIsClosestBallReward(), team_spirit=1)
+    touch_ball_hitforce_reward = DistributeRewards(TouchBallRewardScaledByHitForce(), team_spirit=1)
+    speedflip_kickoff_reward = DistributeRewards(SpeedflipKickoffReward(), team_spirit=1)
+    possesion_reward = DistributeRewards(PossesionReward(), team_spirit=1)
 
     spawn_opponents = True
     team_size = random.randint(1, 2)
@@ -61,19 +67,21 @@ def build_rocketsim_env():
     timeout_seconds = 30
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 
-    terminal_conditions = [NoTouchTimeoutCondition(timeout_ticks), GoalScoredCondition()]
+    terminal_conditions = [GameCondition()]
 
     reward_fn = CombinedReward.from_zipped(
         (player_face_ball_reward, .5),
-        (player_behind_ball_reward, 2),
-        (player_to_ball_reward, 1),
-        (ball_to_goal_reward, 4),
-        (player_is_closest_ball_reward, 1),
+        (player_behind_ball_reward, 3),
+        (player_to_ball_reward, 2),
+        (ball_to_goal_reward, 5),
         (touch_ball_hitforce_reward, 2),
         (speedflip_kickoff_reward, 2),
         (AlignBallGoal(), 3),
         (AirReward(), .25),
-        (event_reward, 10)
+        (event_reward, 20),
+        (possesion_reward, 2),
+        (PlayerVelocityReward(), .5),
+        (GoalSpeedAndPlacementReward(), .5),
     )
     action_parser = LookupAction()
     obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
