@@ -241,3 +241,10 @@ Also I just saw: 1B TIMESTEPS!!!!
 ## 2:45 PM
 
 Finished adding more rewards, to see if we can finally get the bot to score better
+
+## 4:19 PM
+Embarassing.
+
+It's getting worse.
+
+Also fixed a small error i made when making the bot swap between 1v1 and 2v2 modes.

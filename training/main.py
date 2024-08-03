@@ -51,21 +51,18 @@ def build_rocketsim_env():
     concede_reward = -goal_reward * (1 - aggression_bias)
 
     event_reward = EventReward(goal=goal_reward, concede=concede_reward)
-    player_face_ball_reward = DistributeRewards(PlayerFaceBallReward(), team_spirit=1)
-    player_behind_ball_reward = DistributeRewards(PlayerBehindBallReward(), team_spirit=1)
-    player_to_ball_reward = DistributeRewards(VelocityPlayerToBallReward(), team_spirit=1)
-    ball_to_goal_reward = DistributeRewards(VelocityBallToGoalReward(), team_spirit=1)
+    player_face_ball_reward = DistributeRewards(PlayerFaceBallReward(), team_spirit=.5)
+    player_behind_ball_reward = DistributeRewards(PlayerBehindBallReward(), team_spirit=.5)
+    player_to_ball_reward = DistributeRewards(VelocityPlayerToBallReward(), team_spirit=.5)
+    ball_to_goal_reward = DistributeRewards(VelocityBallToGoalReward(), team_spirit=.5)
     # player_is_closest_ball_reward = DistributeRewards(PlayerIsClosestBallReward(), team_spirit=1)
-    touch_ball_hitforce_reward = DistributeRewards(TouchBallRewardScaledByHitForce(), team_spirit=1)
-    speedflip_kickoff_reward = DistributeRewards(SpeedflipKickoffReward(), team_spirit=1)
-    possesion_reward = DistributeRewards(PossesionReward(), team_spirit=1)
+    touch_ball_hitforce_reward = DistributeRewards(TouchBallRewardScaledByHitForce(), team_spirit=.5)
+    speedflip_kickoff_reward = DistributeRewards(SpeedflipKickoffReward(), team_spirit=.5)
+    possesion_reward = DistributeRewards(PossesionReward(), team_spirit=.5)
 
     spawn_opponents = True
-    team_size = random.randint(1, 2)
-    game_tick_rate = 120
+    team_size = 2
     tick_skip = 8
-    timeout_seconds = 30
-    timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 
     terminal_conditions = [GameCondition()]
 
@@ -77,10 +74,10 @@ def build_rocketsim_env():
         (touch_ball_hitforce_reward, 2),
         (speedflip_kickoff_reward, 2),
         (AlignBallGoal(), 3),
-        (AirReward(), .25),
+        (AirReward(), .1),
         (event_reward, 20),
         (possesion_reward, 2),
-        (PlayerVelocityReward(), .5),
+        # (PlayerVelocityReward(), .1),
         (GoalSpeedAndPlacementReward(), .5),
     )
     action_parser = LookupAction()
@@ -118,7 +115,7 @@ if __name__ == "__main__":
                       exp_buffer_size=ts_per_iteration*2,
                       ppo_minibatch_size= 12_500,
                       ppo_ent_coef=0.01,
-                      ppo_epochs=2,
+                      ppo_epochs=3,
                       standardize_returns=True,
                       standardize_obs=False,
                       save_every_ts=500_000,
