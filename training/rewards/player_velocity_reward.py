@@ -4,9 +4,8 @@ from rlgym_sim.utils.gamestates import GameState, PlayerData
 from rlgym_sim.utils.common_values import CAR_MAX_SPEED
 
 class PlayerVelocityReward(RewardFunction):
-    def __init__(self, player_index: int):
+    def __init__(self):
         super().__init__()
-        self.player_index = player_index
 
     def reset(self, initial_state: GameState):
         pass
