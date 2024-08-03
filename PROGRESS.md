@@ -235,3 +235,5 @@ It's getting better!
 It's still bad, but getting there.
 
 I think I figured it out. I forgot to add a goal/concede reward.
+
+Also I just saw: 1B TIMESTEPS!!!!
