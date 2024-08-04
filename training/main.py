@@ -11,6 +11,7 @@ def build_rocketsim_env():
     from lookup_act import LookupAction
 
     from game_condition import GameCondition
+    from rlgym_sim.utils.terminal_conditions.common_conditions import GoalScoredCondition, NoTouchTimeoutCondition
 
     from state_setters.team_size_setter import TeamSizeSetter
     from state_setters.weighted_sample_setter import WeightedSampleSetter
@@ -46,7 +47,7 @@ def build_rocketsim_env():
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward
 
-    aggression_bias = .2
+    aggression_bias = .7
     goal_reward = 1
     concede_reward = -goal_reward * (1 - aggression_bias)
 
@@ -64,21 +65,24 @@ def build_rocketsim_env():
     team_size = 2
     tick_skip = 8
 
-    terminal_conditions = [GameCondition()]
+    no_touch_seconds = 15
+    no_touch_ticks = no_touch_seconds * (120 / tick_skip)
+
+    terminal_conditions = [GoalScoredCondition(), NoTouchTimeoutCondition(no_touch_ticks)]
 
     reward_fn = CombinedReward.from_zipped(
-        (player_face_ball_reward, .5),
-        (player_behind_ball_reward, 3),
+        (player_face_ball_reward, 1),
+        # (player_behind_ball_reward, 3),
         (player_to_ball_reward, 2),
         (ball_to_goal_reward, 5),
         (touch_ball_hitforce_reward, 2),
         (speedflip_kickoff_reward, 2),
-        (AlignBallGoal(), 3),
+        # (AlignBallGoal(), 3),
         (AirReward(), .1),
-        (event_reward, 20),
-        (possesion_reward, 2),
+        (event_reward, 10),
+        # (possesion_reward, 2),
         # (PlayerVelocityReward(), .1),
-        (GoalSpeedAndPlacementReward(), .5),
+        # (GoalSpeedAndPlacementReward(), .5),
     )
     action_parser = LookupAction()
     obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
