@@ -254,3 +254,7 @@ Also fixed a small error i made when making the bot swap between 1v1 and 2v2 mod
 I left him training during the night. He's now worse than before, just flipping around.
 
 I should return to a more stable version and try from there.
+
+## 11:23 AM
+
+I reverted to 415780732 timesteps. Time to retry the bot.
