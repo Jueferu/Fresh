@@ -248,3 +248,9 @@ Embarassing.
 It's getting worse.
 
 Also fixed a small error i made when making the bot swap between 1v1 and 2v2 modes.
+
+# 8/4/2024
+
+I left him training during the night. He's now worse than before, just flipping around.
+
+I should return to a more stable version and try from there.
