@@ -62,9 +62,9 @@ def build_rocketsim_env():
     )
     teamwork_rewards = DistributeRewards(goal_rewards, .5)
     rewards = CombinedReward.from_zipped(
-        (event_reward, 20)
-        (teamwork_rewards, 1)
-        (AirReward(), .05)
+        (event_reward, 20),
+        (teamwork_rewards, 1),
+        (AirReward(), .05),
     )
 
     spawn_opponents = True
