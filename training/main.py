@@ -52,19 +52,16 @@ def build_rocketsim_env():
     concede_reward = -goal_reward * (1 - aggression_bias)
 
     event_reward = EventReward(goal=goal_reward, concede=concede_reward)
-    goal_rewards = CombinedReward.from_zipped(
-        (VelocityBallToGoalReward(), 10),
-        (VelocityPlayerToBallReward(), 1),
-        (PlayerIsClosestBallReward(), .25),
-        (PlayerFaceBallReward(), .5),
-        (PlayerBehindBallReward(), .5),
-        (TouchBallRewardScaledByHitForce(), 1.5),
-    )
-    teamwork_rewards = DistributeRewards(goal_rewards, .5)
     rewards = CombinedReward.from_zipped(
         (event_reward, 20),
-        (teamwork_rewards, 1),
         (AirReward(), .05),
+        (DistributeRewards(PossesionReward(), .7), 1),
+        (VelocityBallToGoalReward(), 10),
+        (DistributeRewards(VelocityPlayerToBallReward(), .7), 1),
+        (DistributeRewards(SpeedflipKickoffReward(), 1), .5),
+        (DistributeRewards(TouchBallRewardScaledByHitForce(), .7), 2),
+        (DistributeRewards(PlayerFaceBallReward(), .5), .5),
+        (AlignBallGoal(), 3),
     )
 
     spawn_opponents = True
@@ -76,7 +73,7 @@ def build_rocketsim_env():
 
     terminal_conditions = [GoalScoredCondition(), NoTouchTimeoutCondition(no_touch_ticks)]
 
-    reward_fn = teamwork_rewards
+    reward_fn = rewards
     action_parser = LookupAction()
     obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
             ang_coef=1 / np.pi,
