@@ -1,5 +1,16 @@
 import numpy as np
 import random
+import os
+
+# https://github.com/redd-rl/apollo-bot/blob/main/main.py
+def get_most_recent_checkpoint() -> str:
+    checkpoint_load_dir = "data/checkpoints/"
+    checkpoint_load_dir += str(
+        max(os.listdir(checkpoint_load_dir), key=lambda d: int(d.split("-")[-1])))
+    checkpoint_load_dir += "/"
+    checkpoint_load_dir += str(
+        max(os.listdir(checkpoint_load_dir), key=lambda d: int(d)))
+    return checkpoint_load_dir
 
 def build_rocketsim_env():
     import rlgym_sim
@@ -25,7 +36,6 @@ def build_rocketsim_env():
         KickoffLikeSetter(False, False),
         GoaliePracticeState(allow_enemy_interference=True),
         RandomState(True, True, False),
-        DefaultState()
     )
     state_setter = TeamSizeSetter(1, default)
     
@@ -48,32 +58,18 @@ def build_rocketsim_env():
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
-    aggression_bias = .7
-    goal_reward = 1
-    concede_reward = -goal_reward * (1 - aggression_bias)
-
-    event_reward = EventReward(goal=goal_reward, concede=concede_reward)
     rewards = CombinedReward.from_zipped(
-        (event_reward, 20),
-        (AirReward(), .05),
-        (EventReward(save=1), 5),
-        (DistributeRewards(PossesionReward(), 1), 1),
-        (VelocityBallToGoalReward(), 5),
-        (DistributeRewards(VelocityPlayerToBallReward(), .7), 7),
-        (DistributeRewards(SpeedflipKickoffReward(), 1), 2),
-        (DistributeRewards(TouchBallRewardScaledByHitForce(), .7), 10),
-        (DistributeRewards(PlayerFaceBallReward(), .5), .1),
-        (DistributeRewards(PlayerBehindBallReward(), 1), 1),
-        (LiuDistanceBallToGoalReward(), 10),
-        (PlayerVelocityReward(), 1),
-        (SaveBoostReward(), 1),
+        (EventReward(touch=1), 50),
+        (VelocityPlayerToBallReward(), 5),
+        (PlayerFaceBallReward(), 1)
+        (AirReward(), 0.15)
     )
 
     spawn_opponents = True
-    team_size = 2
+    team_size = 4
     tick_skip = 8
 
-    no_touch_seconds = 15
+    no_touch_seconds = 10
     no_touch_ticks = no_touch_seconds * (120 / tick_skip)
 
     terminal_conditions = [GoalScoredCondition(), NoTouchTimeoutCondition(no_touch_ticks)]
@@ -104,24 +100,32 @@ if __name__ == "__main__":
 
     n_proc = 32
     min_inference_size = max(1, int(round(n_proc * 0.9)))
-    ts_per_iteration = 200_000
+    ts_per_iteration = 50_000
+
+    try:
+        checkpoint_load_dir = get_most_recent_checkpoint()
+        print(f"Loading checkpoint: {checkpoint_load_dir}")
+    except:
+        print("checkpoint load dir not found.")
+        checkpoint_load_dir = None
 
     learner = Learner(build_rocketsim_env,
                       n_proc=n_proc,
+                      checkpoint_load_folder=checkpoint_load_dir,
                       min_inference_size=min_inference_size,
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
-                      exp_buffer_size=ts_per_iteration*2,
-                      ppo_minibatch_size= 12_500,
+                      exp_buffer_size=ts_per_iteration*3,
+                      ppo_minibatch_size= 25_000,
                       ppo_ent_coef=0.01,
                       ppo_epochs=3,
                       standardize_returns=True,
                       standardize_obs=False,
                       save_every_ts=500_000,
-                      policy_layer_sizes=[2048, 2048, 1024],
-                      critic_layer_sizes=[2048, 2048, 1024],
+                      policy_layer_sizes=[2048, 2048, 1024, 1024],
+                      critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=1e-4,
-                      critic_lr=1e-4,
+                      policy_lr=7e-4,
+                      critic_lr=7e-4,
                       render=False)
     learner.learn()
