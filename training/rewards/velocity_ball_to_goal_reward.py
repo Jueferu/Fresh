@@ -6,7 +6,7 @@ from rlgym_sim.utils.common_values import BLUE_TEAM, ORANGE_TEAM, ORANGE_GOAL_BA
     BLUE_GOAL_BACK, BALL_MAX_SPEED
 
 class VelocityBallToGoalReward(RewardFunction):
-    def __init__(self, own_goal=False, use_scalar_projection=False):
+    def __init__(self, own_goal=False, use_scalar_projection=True):
         super().__init__()
         self.own_goal = own_goal
         self.use_scalar_projection = use_scalar_projection

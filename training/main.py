@@ -22,9 +22,9 @@ def build_rocketsim_env():
 
     default = WeightedSampleSetter.from_zipped(
         WallPracticeState(),
-        KickoffLikeSetter(),
-        GoaliePracticeState(),
-        RandomState(),
+        KickoffLikeSetter(False, False),
+        GoaliePracticeState(allow_enemy_interference=True),
+        RandomState(True, True, False),
         DefaultState()
     )
     state_setter = TeamSizeSetter(1, default)
@@ -45,7 +45,7 @@ def build_rocketsim_env():
     from rewards.goal_speed_and_placement_reward import GoalSpeedAndPlacementReward
     from rewards.dribble_reward import DribbleReward
 
-    from rlgym_sim.utils.reward_functions.common_rewards import EventReward
+    from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
     aggression_bias = .7
     goal_reward = 1
@@ -54,14 +54,17 @@ def build_rocketsim_env():
     event_reward = EventReward(goal=goal_reward, concede=concede_reward)
     rewards = CombinedReward.from_zipped(
         (event_reward, 20),
-        (AirReward(), .01),
-        (DistributeRewards(PossesionReward(), .7), 1),
-        (VelocityBallToGoalReward(), 10),
-        (DistributeRewards(VelocityPlayerToBallReward(), .7), 2),
-        (DistributeRewards(SpeedflipKickoffReward(), 1), 1),
-        (DistributeRewards(TouchBallRewardScaledByHitForce(), .7), 3),
-        (DistributeRewards(PlayerFaceBallReward(), .5), .05),
-        (AlignBallGoal(), 3),
+        (AirReward(), .05),
+        (EventReward(save=1), 5),
+        (DistributeRewards(PossesionReward(), 1), 1),
+        (VelocityBallToGoalReward(), 5),
+        (DistributeRewards(VelocityPlayerToBallReward(), .7), 7),
+        (DistributeRewards(SpeedflipKickoffReward(), 1), 2),
+        (DistributeRewards(TouchBallRewardScaledByHitForce(), .7), 10),
+        (DistributeRewards(PlayerFaceBallReward(), .5), .1),
+        (DistributeRewards(PlayerBehindBallReward(), 1), 1),
+        (LiuDistanceBallToGoalReward(), 10),
+        (PlayerVelocityReward(), 1),
     )
 
     spawn_opponents = True

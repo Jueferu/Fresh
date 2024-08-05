@@ -28,6 +28,7 @@ class PossesionReward(RewardFunction):
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
         dist_to_ball = np.linalg.norm(player.car_data.position - state.ball.position)
+        
         if not self.prevTeamTouch == player.team_num:
             return 0
         if not dist_to_ball < self.min_dist:

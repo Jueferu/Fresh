@@ -3,6 +3,7 @@ from rlgym_sim.utils import RewardFunction
 from rlgym_sim.utils.gamestates import GameState, PlayerData
 from rlgym_sim.utils.common_values import CAR_MAX_SPEED
 
+def clamp(n, smallest, largest): return max(smallest, min(n, largest))
 class SpeedflipKickoffReward(RewardFunction):
     def __init__(self, goal_speed=0.5):
         super().__init__()
@@ -18,6 +19,16 @@ class SpeedflipKickoffReward(RewardFunction):
                 norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
                 norm_vel = vel / CAR_MAX_SPEED
                 speed_rew = self.goal_speed * max(float(np.dot(norm_pos_diff, norm_vel)), 0.025)
+
+                # reward player for behind closer to the ball than the opponent
+                enemies = [p for p in state.players if p.team_num != player.team_num]
+                closest_enemy = min(enemies, key=lambda e: np.linalg.norm(e.car_data.position - state.ball.position))
+
+                if np.linalg.norm(player.car_data.position - state.ball.position) < np.linalg.norm(closest_enemy.car_data.position - state.ball.position):
+                    speed_rew += 1
+
+                speed_rew /= 2
+                speed_rew = clamp(speed_rew, 0, 1)
                 if np.isnan(speed_rew):
                     return 0
                 return speed_rew
