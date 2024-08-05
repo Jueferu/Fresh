@@ -44,6 +44,7 @@ def build_rocketsim_env():
     from rewards.player_velocity_reward import PlayerVelocityReward
     from rewards.goal_speed_and_placement_reward import GoalSpeedAndPlacementReward
     from rewards.dribble_reward import DribbleReward
+    from rewards.save_boost_reward import SaveBoostReward
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
@@ -65,6 +66,7 @@ def build_rocketsim_env():
         (DistributeRewards(PlayerBehindBallReward(), 1), 1),
         (LiuDistanceBallToGoalReward(), 10),
         (PlayerVelocityReward(), 1),
+        (SaveBoostReward(), 1),
     )
 
     spawn_opponents = True
