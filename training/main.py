@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import os
+import time
 
 # https://github.com/redd-rl/apollo-bot/blob/main/main.py
 def get_most_recent_checkpoint() -> str:
@@ -125,7 +126,16 @@ if __name__ == "__main__":
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=7e-4,
-                      critic_lr=7e-4,
+                      policy_lr=3e-4,
+                      critic_lr=3e-4,
                       render=False)
+    
+    start_time = time.time()
+
     learner.learn()
+
+    end_time = time.time()
+    trained_time = end_time - start_time
+    formatted_time = time.strftime("%H:%M:%S", time.gmtime(trained_time))
+    
+    print(f"Trained for {formatted_time}!")
