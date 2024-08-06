@@ -60,10 +60,12 @@ def build_rocketsim_env():
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
     rewards = CombinedReward.from_zipped(
-        (EventReward(touch=1), 20),
+        (TouchBallRewardScaledByHitForce(), 1),
         (VelocityPlayerToBallReward(), 10),
         (PlayerFaceBallReward(), 1),
         (AirReward(), 0.05),
+        (VelocityBallToGoalReward(), 10),
+        (PlayerIsClosestBallReward(), 3),
     )
 
     spawn_opponents = True
@@ -126,8 +128,8 @@ if __name__ == "__main__":
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=3e-4,
-                      critic_lr=3e-4,
+                      policy_lr=2e-4,
+                      critic_lr=2e-4,
                       render=False)
     
     start_time = time.time()
