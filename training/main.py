@@ -37,7 +37,7 @@ def build_rocketsim_env():
         GoaliePracticeState(allow_enemy_interference=True),
         RandomState(True, True, False),
     )
-    state_setter = TeamSizeSetter(1, default)
+    state_setter = default
     
     from rewards.zero_sum_reward import ZeroSumReward
     from rewards.distribute_rewards import DistributeRewards
@@ -61,12 +61,12 @@ def build_rocketsim_env():
     rewards = CombinedReward.from_zipped(
         (EventReward(touch=1), 50),
         (VelocityPlayerToBallReward(), 5),
-        (PlayerFaceBallReward(), 1)
-        (AirReward(), 0.15)
+        (PlayerFaceBallReward(), 1),
+        (AirReward(), 0.15),
     )
 
     spawn_opponents = True
-    team_size = 4
+    team_size = 1
     tick_skip = 8
 
     no_touch_seconds = 10
@@ -79,7 +79,7 @@ def build_rocketsim_env():
     obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
             ang_coef=1 / np.pi,
             lin_vel_coef=1 / common_values.CAR_MAX_SPEED,
-            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL, player_padding=2, expanding=False)
+            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL, player_padding=4, expanding=False)
 
     env = rlgym_sim.make(tick_skip=tick_skip,
                          team_size=team_size,
