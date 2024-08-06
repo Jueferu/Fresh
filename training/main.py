@@ -32,9 +32,9 @@ def build_rocketsim_env():
     from rlgym_sim.utils.state_setters import RandomState, DefaultState
 
     default = WeightedSampleSetter.from_zipped(
-        WallPracticeState(),
-        KickoffLikeSetter(False, False),
-        GoaliePracticeState(allow_enemy_interference=True),
+        # WallPracticeState(),
+        # KickoffLikeSetter(False, False),
+        # GoaliePracticeState(allow_enemy_interference=True),
         RandomState(True, True, False),
     )
     state_setter = default
@@ -59,10 +59,10 @@ def build_rocketsim_env():
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
     rewards = CombinedReward.from_zipped(
-        (EventReward(touch=1), 50),
-        (VelocityPlayerToBallReward(), 5),
+        (EventReward(touch=1), 20),
+        (VelocityPlayerToBallReward(), 10),
         (PlayerFaceBallReward(), 1),
-        (AirReward(), 0.15),
+        (AirReward(), 0.05),
     )
 
     spawn_opponents = True
@@ -70,7 +70,7 @@ def build_rocketsim_env():
     tick_skip = 8
 
     no_touch_seconds = 10
-    no_touch_ticks = no_touch_seconds * (120 / tick_skip)
+    no_touch_ticks = int(round(no_touch_seconds * 120 / tick_skip))
 
     terminal_conditions = [GoalScoredCondition(), NoTouchTimeoutCondition(no_touch_ticks)]
 

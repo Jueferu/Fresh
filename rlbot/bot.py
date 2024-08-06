@@ -12,10 +12,17 @@ from obs import AdvancedAdaptedObs as MyObs
 class RLGymPPOBot(BaseAgent):
 	def __init__(self, name, team, index):
 		super().__init__(name, team, index)
-		self.obs_builder = MyObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
+		self.obs_builder = MyObs(
+			pos_coef=np.asarray(
+				[1 / common_values.SIDE_WALL_X,
+	  			1 / common_values.BACK_NET_Y,
+	    		1 / common_values.CEILING_Z
+				]),
             ang_coef=1 / np.pi,
             lin_vel_coef=1 / common_values.CAR_MAX_SPEED,
-            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL)
+            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL,
+			player_padding=4,
+			expanding=False)
 		self.agent = Agent()
 		self.tick_skip = 8
 		self.game_state: GameState = None

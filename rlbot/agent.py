@@ -8,7 +8,7 @@ from act import LookupAction as MyAct
 from discrete_policy import DiscreteFF
 
 # You can get the OBS size from the rlgym-ppo console print-outs when you start your bot
-OBS_SIZE = 173
+OBS_SIZE = 293
 
 # If you haven't set these, they are [256, 256, 256] by default
 POLICY_LAYER_SIZES = [2048, 2048, 1024, 1024]
