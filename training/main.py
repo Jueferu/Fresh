@@ -60,12 +60,11 @@ def build_rocketsim_env():
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
     rewards = CombinedReward.from_zipped(
-        (TouchBallRewardScaledByHitForce(), 1),
-        (VelocityPlayerToBallReward(), 10),
-        (PlayerFaceBallReward(), 1),
-        (AirReward(), 0.05),
-        (VelocityBallToGoalReward(), 10),
-        (PlayerIsClosestBallReward(), 3),
+        (TouchBallRewardScaledByHitForce, 5),
+        (VelocityPlayerToBallReward(), 1),
+        (PlayerFaceBallReward(), .5),
+        (AirReward(), 0.1),
+        (VelocityBallToGoalReward(), 10)
     )
 
     spawn_opponents = True
