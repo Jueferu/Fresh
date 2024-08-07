@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     n_proc = 32
     min_inference_size = max(1, int(round(n_proc * 0.9)))
-    ts_per_iteration = 50_000
+    ts_per_iteration = 100_000
 
     try:
         checkpoint_load_dir = get_most_recent_checkpoint()
@@ -120,10 +120,10 @@ if __name__ == "__main__":
                       exp_buffer_size=ts_per_iteration*3,
                       ppo_minibatch_size= 25_000,
                       ppo_ent_coef=0.01,
-                      ppo_epochs=3,
+                      ppo_epochs=2,
                       standardize_returns=True,
                       standardize_obs=False,
-                      save_every_ts=500_000,
+                      save_every_ts=1_000_000,
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
