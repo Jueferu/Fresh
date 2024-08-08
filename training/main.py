@@ -33,10 +33,11 @@ def build_rocketsim_env():
     from rlgym_sim.utils.state_setters import RandomState, DefaultState
 
     default = WeightedSampleSetter.from_zipped(
-        # WallPracticeState(),
-        # KickoffLikeSetter(False, False),
-        # GoaliePracticeState(allow_enemy_interference=True),
+        WallPracticeState(),
+        KickoffLikeSetter(False, False),
+        GoaliePracticeState(allow_enemy_interference=True),
         RandomState(True, True, False),
+        DefaultState(),
     )
     state_setter = default
     
@@ -59,12 +60,22 @@ def build_rocketsim_env():
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
+    agression_bias = .2
+    concede_reward = -1 * (1 - agression_bias)
     rewards = CombinedReward.from_zipped(
         (TouchBallRewardScaledByHitForce(), 5),
         (VelocityPlayerToBallReward(), 1),
         (PlayerFaceBallReward(), .5),
         (AirReward(), 0.1),
         (VelocityBallToGoalReward(), 10),
+        #
+        (SpeedflipKickoffReward(), 10),
+        (PlayerBehindBallReward(), .5),
+        (PlayerVelocityReward(), 1),
+        (SaveBoostReward(), 3)
+        #
+        (DribbleReward(), 2),
+        (EventReward(goal=1, concede=concede_reward), 20),
     )
 
     spawn_opponents = True
@@ -102,7 +113,7 @@ if __name__ == "__main__":
 
     n_proc = 32
     min_inference_size = max(1, int(round(n_proc * 0.9)))
-    ts_per_iteration = 100_000
+    ts_per_iteration = 200_000
 
     try:
         checkpoint_load_dir = get_most_recent_checkpoint()
@@ -127,8 +138,8 @@ if __name__ == "__main__":
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=2e-4,
-                      critic_lr=2e-4,
+                      policy_lr=1e-4,
+                      critic_lr=1e-4,
                       render=False)
     
     start_time = time.time()

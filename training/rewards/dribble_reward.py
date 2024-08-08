@@ -9,9 +9,8 @@ MAX_DISTANCE = 197.0
 SPEED_MATCH_FACTOR = 2.0
 
 class DribbleReward(RewardFunction):
-    def __init__(self, player_index: int):
+    def __init__(self):
         super().__init__()
-        self.player_index = player_index
 
     def reset(self, initial_state: GameState):
         pass
