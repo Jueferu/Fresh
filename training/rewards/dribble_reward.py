@@ -23,7 +23,10 @@ class DribbleReward(RewardFunction):
         if not player.on_ground:
             return 0
         
-        if not (ball_height >= MIN_BALL_HEIGHT & ball_height <= MAX_BALL_HEIGHT):
+        if not (ball_height >= MIN_BALL_HEIGHT):
+            return 0
+        
+        if not (ball_height <= MAX_BALL_HEIGHT):
             return 0
         
         if np.linalg.norm(player_pos - ball_pos) > MAX_DISTANCE:

@@ -13,23 +13,16 @@ class SpeedflipKickoffReward(RewardFunction):
         pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
-        if state.ball.position[0] == 0 and state.ball.position[1] == 0 and player.boost_amount < 2:
-                vel = player.car_data.linear_velocity
-                pos_diff = state.ball.position - player.car_data.position
-                norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
-                norm_vel = vel / CAR_MAX_SPEED
-                speed_rew = self.goal_speed * max(float(np.dot(norm_pos_diff, norm_vel)), 0.025)
-
-                # reward player for behind closer to the ball than the opponent
-                enemies = [p for p in state.players if p.team_num != player.team_num]
-                closest_enemy = min(enemies, key=lambda e: np.linalg.norm(e.car_data.position - state.ball.position))
-
-                if np.linalg.norm(player.car_data.position - state.ball.position) < np.linalg.norm(closest_enemy.car_data.position - state.ball.position):
-                    speed_rew += 1
-
-                speed_rew /= 2
-                speed_rew = clamp(speed_rew, 0, 1)
-                if np.isnan(speed_rew):
-                    return 0
-                return speed_rew
-        return 0
+        if state.ball.position[0] == 0:
+            return 0
+        if state.ball.position[1] == 0:
+            return 0
+        if player.boost_amount < 2:
+            return 0
+        
+        vel = player.car_data.linear_velocity
+        pos_diff = state.ball.position - player.car_data.position
+        norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
+        norm_vel = vel / CAR_MAX_SPEED
+        speed_rew = self.goal_speed * max(float(np.dot(norm_pos_diff, norm_vel)), 0.025)
+        return speed_rew

@@ -30,14 +30,26 @@ def build_rocketsim_env():
     from state_setters.wall_state import WallPracticeState
     from state_setters.symmetric_setter import KickoffLikeSetter
     from state_setters.goalie_state import GoaliePracticeState
+    from state_setters.dribbling_state import DribblingStateSetter
+    from state_setters.jump_shot_state import JumpShotState
+    from state_setters.save_state import SaveState
+    from state_setters.save_shot_state import SaveShot
+    from state_setters.side_high_roll_state import SideHighRoll
+    from state_setters.shot_state import ShotState
     from rlgym_sim.utils.state_setters import RandomState, DefaultState
 
     default = WeightedSampleSetter.from_zipped(
         WallPracticeState(),
-        KickoffLikeSetter(False, False),
-        GoaliePracticeState(allow_enemy_interference=True),
+        DribblingStateSetter(),
+        JumpShotState(),
+        SaveShot(),
+        SaveState(),
+        SideHighRoll(),
+        ShotState(),
         RandomState(True, True, False),
         DefaultState(),
+        GoaliePracticeState(True, True, False, False),
+        KickoffLikeSetter(False, False),
     )
     state_setter = default
     
@@ -55,27 +67,33 @@ def build_rocketsim_env():
     from rewards.possesion_reward import PossesionReward
     from rewards.player_velocity_reward import PlayerVelocityReward
     from rewards.goal_speed_and_placement_reward import GoalSpeedAndPlacementReward
-    from rewards.dribble_reward import DribbleReward
+    from rewards.kickoff_proximity_reward import KickoffProximityReward
     from rewards.save_boost_reward import SaveBoostReward
+    from rewards.aerial_distance_reward import AerialDistanceReward
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
-    agression_bias = .2
+    agression_bias = 0
     concede_reward = -1 * (1 - agression_bias)
     rewards = CombinedReward.from_zipped(
-        (TouchBallRewardScaledByHitForce(), 5),
-        (VelocityPlayerToBallReward(), 1),
+        (TouchBallRewardScaledByHitForce(), 1),
+        (VelocityPlayerToBallReward(), .5),
         (PlayerFaceBallReward(), .5),
-        (AirReward(), 0.1),
-        (VelocityBallToGoalReward(), 10),
+        (AirReward(), 0.05),
+        (VelocityBallToGoalReward(), 5),
         #
-        (SpeedflipKickoffReward(), 10),
-        (PlayerBehindBallReward(), .5),
+        (PlayerBehindBallReward(), 5),
         (PlayerVelocityReward(), 1),
-        (SaveBoostReward(), 3)
+        (SaveBoostReward(), 5),
         #
-        (DribbleReward(), 2),
         (EventReward(goal=1, concede=concede_reward), 20),
+        #
+        (PlayerIsClosestBallReward(), 5),
+        #(
+        (KickoffProximityReward(), 20),
+        (EventReward(boost_pickup=1), 20),
+        #
+        (AerialDistanceReward(1, 1), 15),
     )
 
     spawn_opponents = True
@@ -89,10 +107,13 @@ def build_rocketsim_env():
 
     reward_fn = rewards
     action_parser = LookupAction()
-    obs_builder = AdvancedAdaptedObs(pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
+    obs_builder = AdvancedAdaptedObs(
+            pos_coef=np.asarray([1 / common_values.SIDE_WALL_X, 1 / common_values.BACK_NET_Y, 1 / common_values.CEILING_Z]),
             ang_coef=1 / np.pi,
             lin_vel_coef=1 / common_values.CAR_MAX_SPEED,
-            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL, player_padding=4, expanding=False)
+            ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL, 
+            player_padding=4, 
+            expanding=False)
 
     env = rlgym_sim.make(tick_skip=tick_skip,
                          team_size=team_size,
@@ -129,17 +150,17 @@ if __name__ == "__main__":
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
                       exp_buffer_size=ts_per_iteration*3,
-                      ppo_minibatch_size= 25_000,
+                      ppo_minibatch_size=25_000,
                       ppo_ent_coef=0.01,
-                      ppo_epochs=2,
+                      ppo_epochs=3,
                       standardize_returns=True,
                       standardize_obs=False,
                       save_every_ts=1_000_000,
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=1e-4,
-                      critic_lr=1e-4,
+                      policy_lr=0.8e-4,
+                      critic_lr=0.8e-4,
                       render=False)
     
     start_time = time.time()
