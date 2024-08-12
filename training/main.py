@@ -69,31 +69,20 @@ def build_rocketsim_env():
     from rewards.goal_speed_and_placement_reward import GoalSpeedAndPlacementReward
     from rewards.kickoff_proximity_reward import KickoffProximityReward
     from rewards.save_boost_reward import SaveBoostReward
+    from rewards.boost_pickup_reward import BoostPickupReward
     from rewards.aerial_distance_reward import AerialDistanceReward
+    from rewards.dribble_reward import DribbleReward
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
-    agression_bias = 0
+    agression_bias = .8
     concede_reward = -1 * (1 - agression_bias)
     rewards = CombinedReward.from_zipped(
-        (TouchBallRewardScaledByHitForce(), 1),
-        (VelocityPlayerToBallReward(), .5),
-        (PlayerFaceBallReward(), .5),
-        (AirReward(), 0.05),
-        (VelocityBallToGoalReward(), 5),
-        #
-        (PlayerBehindBallReward(), 5),
-        (PlayerVelocityReward(), 1),
-        (SaveBoostReward(), 5),
-        #
-        (EventReward(goal=1, concede=concede_reward), 20),
-        #
-        (PlayerIsClosestBallReward(), 5),
-        #(
+        (EventReward(goal=1, concede=concede_reward), 10),
+        (VelocityBallToGoalReward(), 2.5),
+        (LiuDistanceBallToGoalReward(), 2.5),
         (KickoffProximityReward(), 20),
-        (EventReward(boost_pickup=1), 20),
-        #
-        (AerialDistanceReward(1, 1), 15),
+        (BoostPickupReward(), 1),
     )
 
     spawn_opponents = True
@@ -150,9 +139,9 @@ if __name__ == "__main__":
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
                       exp_buffer_size=ts_per_iteration*3,
-                      ppo_minibatch_size=25_000,
+                      ppo_minibatch_size=50_000,
                       ppo_ent_coef=0.01,
-                      ppo_epochs=3,
+                      ppo_epochs=2,
                       standardize_returns=True,
                       standardize_obs=False,
                       save_every_ts=1_000_000,

@@ -10,20 +10,24 @@ class KickoffProximityReward(RewardFunction):
         pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
-        if not (state.ball.position[0] == 0 and state.ball.position[1] == 0):
+        ball_vel = state.ball.linear_velocity
+        if ball_vel[0] != 0 or ball_vel[1] != 0:
             return 0
         
-        player_pos = np.array(player.car_data.position)
-        ball_pos = np.array(state.ball.position)
-        player_dist_to_ball = np.linalg.norm(player_pos - ball_pos)
+        ball_pos = state.ball.position
+        player_pos = player.car_data.position
+        player_dist = np.linalg.norm(ball_pos - player_pos)
+        
+        nearest_enemy_dist = np.inf
+        
+        for player in state.players:
+            if player.team == player.team:
+                continue
+            
+            enemy_dist = np.linalg.norm(ball_pos - player.car_data.position)
+            if enemy_dist >= nearest_enemy_dist:
+                continue
+            
+            nearest_enemy_dist = enemy_dist
 
-        opponent_distances = []
-        for p in state.players:
-            if p.team_num != player.team_num:
-                opponent_pos = np.array(p.car_data.position)
-                opponent_dist_to_ball = np.linalg.norm(opponent_pos - ball_pos)
-                opponent_distances.append(opponent_dist_to_ball)
-
-        if opponent_distances and player_dist_to_ball < min(opponent_distances):
-            return 1
-        return -1
+        return 1 if player_dist < nearest_enemy_dist else -.5
