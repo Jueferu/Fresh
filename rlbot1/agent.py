@@ -3,9 +3,9 @@ import os
 import numpy as np
 import torch
 
-from rlbot1.act import LookupAction as MyAct
+from act import LookupAction as MyAct
 
-from rlbot1.discrete_policy import DiscreteFF
+from discrete_policy import DiscreteFF
 
 # You can get the OBS size from the rlgym-ppo console print-outs when you start your bot
 OBS_SIZE = 293

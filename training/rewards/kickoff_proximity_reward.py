@@ -20,11 +20,11 @@ class KickoffProximityReward(RewardFunction):
         
         nearest_enemy_dist = np.inf
         
-        for player in state.players:
-            if player.team == player.team:
+        for other_player in state.players:
+            if other_player.team_num == player.team_num:
                 continue
             
-            enemy_dist = np.linalg.norm(ball_pos - player.car_data.position)
+            enemy_dist = np.linalg.norm(ball_pos - other_player.car_data.position)
             if enemy_dist >= nearest_enemy_dist:
                 continue
             

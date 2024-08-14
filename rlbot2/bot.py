@@ -5,8 +5,8 @@ from rlgym_compat import GameState
 
 from rlgym_sim.utils import common_values
 
-from rlbot2.agent import Agent
-from rlbot2.obs import AdvancedAdaptedObs as MyObs
+from agent import Agent
+from obs import AdvancedAdaptedObs as MyObs
 
 class RLGymPPOBot(BaseAgent):
 	def __init__(self, name, team, index):

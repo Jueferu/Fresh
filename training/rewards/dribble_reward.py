@@ -19,6 +19,7 @@ class DribbleReward(RewardFunction):
         player_pos = player.car_data.position
         ball_pos = state.ball.position
         ball_height = ball_pos[2]
+        player_to_ball_distance = np.linalg.norm(player_pos - ball_pos)
 
         if not player.on_ground:
             return 0
@@ -29,12 +30,12 @@ class DribbleReward(RewardFunction):
         if not (ball_height <= MAX_BALL_HEIGHT):
             return 0
         
-        if player_pos - ball_pos > MAX_DISTANCE:
+        if player_to_ball_distance > MAX_DISTANCE:
             return 0
 
         player_speed = player.car_data.linear_velocity
         ball_speed = state.ball.linear_velocity
-        speed_match_reward = 1 - ((player_speed / CAR_MAX_SPEED) + SPEED_MATCH_FACTOR * (1 - abs(player_speed - ball_speed) / (player_speed + ball_speed)))
+        speed_match_reward = ((player_speed / CAR_MAX_SPEED) + SPEED_MATCH_FACTOR * (1 - abs(player_speed - ball_speed) / (player_speed + ball_speed)))
         if np.isnan(speed_match_reward):
             return 0
         

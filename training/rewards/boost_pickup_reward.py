@@ -24,8 +24,8 @@ class BoostPickupReward(RewardFunction):
         if not last_player:
             return 0
         
-        old_boost = last_player.boost_amount / 100
-        new_boost = player.boost_amount / 100
+        old_boost = last_player.boost_amount
+        new_boost = player.boost_amount
         if new_boost <= 0:
             return 0
         

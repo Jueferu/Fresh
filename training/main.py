@@ -75,14 +75,19 @@ def build_rocketsim_env():
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
-    agression_bias = .8
+    agression_bias = .9
     concede_reward = -1 * (1 - agression_bias)
     rewards = CombinedReward.from_zipped(
-        (EventReward(goal=1, concede=concede_reward), 10),
-        (VelocityBallToGoalReward(), 2.5),
-        (LiuDistanceBallToGoalReward(), 2.5),
-        (KickoffProximityReward(), 20),
-        (BoostPickupReward(), 1),
+        (EventReward(goal=1, concede=concede_reward), 20),
+        (VelocityBallToGoalReward(), 10),
+        (TouchBallRewardScaledByHitForce(), 2.5),
+        (DistributeRewards(KickoffProximityReward(), 1), 20),
+        (BoostPickupReward(), 10),
+        (SaveBoostReward(), 2.5),
+        (PlayerVelocityReward(), .5),
+        (DistributeRewards(PlayerBehindBallReward(), .5), 5),
+        #(PossesionReward(), 5),
+        (DistributeRewards(PlayerFaceBallReward(), 1), .5),
     )
 
     spawn_opponents = True
@@ -148,8 +153,8 @@ if __name__ == "__main__":
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=0.8e-4,
-                      critic_lr=0.8e-4,
+                      policy_lr=1e-4,
+                      critic_lr=1e-4,
                       render=False)
     
     start_time = time.time()

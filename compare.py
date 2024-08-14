@@ -6,26 +6,40 @@ import rlgym_sim.utils.common_values as common_values
 import numpy as np
 import torch
 
-import rlbot1.bot
-import rlbot2.bot
-
 # read the agents' BOOK_KEEPING_VARS.json files to get the agent's "cumulative_model_updates" value
 import json
 with open("rlbot1/BOOK_KEEPING_VARS.json", "r") as f:
     bot1_cumulative_model_updates = json.load(f)["cumulative_model_updates"]
 with open("rlbot2/BOOK_KEEPING_VARS.json", "r") as f:
     bot2_cumulative_model_updates = json.load(f)["cumulative_model_updates"]
+    
+bot1_name = f"Fresh V2.{bot1_cumulative_model_updates}"
+bot2_name = f"Fresh V2.{bot2_cumulative_model_updates}"
 
-bot1 = rlbot1.bot.RLGymPPOBot(f"{bot1_cumulative_model_updates}", 0, 0)
-bot2 = rlbot2.bot.RLGymPPOBot(f"{bot2_cumulative_model_updates}", 1, 1)
+from rlbot1.discrete_policy import DiscreteFF
 
 from training.lookup_act import LookupAction
 from training.advanced_adapted_obs import AdvancedAdaptedObs
 
+action_parser = LookupAction()
+device = torch.device("cpu")
+num_actions = len(action_parser._lookup_table)
+
+OBS_SIZE = 293
+POLICY_LAYER_SIZES = [2048, 2048, 1024, 1024]
+
+bot1_policy = DiscreteFF(OBS_SIZE, num_actions, POLICY_LAYER_SIZES, device)
+bot2_policy = DiscreteFF(OBS_SIZE, num_actions, POLICY_LAYER_SIZES, device)
+
+bot1_policy.load_state_dict(torch.load("rlbot1\PPO_POLICY.pt", map_location=device))
+bot2_policy.load_state_dict(torch.load("rlbot2\PPO_POLICY.pt", map_location=device))
+
+torch.set_num_threads(2)
+
 env = rlgym_sim.make(
     tick_skip=8,
     spawn_opponents=True,
-    action_parser=LookupAction(),
+    action_parser=action_parser,
     obs_builder=AdvancedAdaptedObs(
         pos_coef=np.asarray(
             [
@@ -53,28 +67,30 @@ bot1_score = 0
 bot2_score = 0
 max_score = 500
 
-while (bot1_score + bot2_score) < max_score:
-    obs = env.reset()
-    done = False
-    last_info = {'result': 0}
-    
-    while not done:
-        action1, action2 = None, None
-        with torch.no_grad():
-            action1, _ = bot1.agent.policy.get_action(obs[0], True)
-            action2, _ = bot2.agent.policy.get_action(obs[1], True)
-
-        new_obs, _, term, info = env.step([action1, action2])
-        env.render()
-        obs = new_obs
-        done = term
-        last_info = info
-    
-    result = last_info['result']
-    
-    if result == 1:
-        bot1_score += 1
-    elif result == -1:
-        bot2_score += 1
+try:
+    while (bot1_score + bot2_score) < max_score:
+        obs = env.reset()
+        done = False
+        last_info = {'result': 0}
         
-    print(f"{bot1.name}: {bot1_score} - {bot2.name}: {bot2_score}")
+        while not done:
+            action1, action2 = None, None
+            with torch.no_grad():
+                action1, _ = bot1_policy.get_action(obs[0], True)
+                action2, _ = bot2_policy.get_action(obs[1], True)
+
+            new_obs, _, term, info = env.step([action1, action2])
+            env.render()
+            obs = new_obs
+            done = term
+            last_info = info
+        
+        result = last_info['result']
+        
+        if result == 1:
+            bot1_score += 1
+        elif result == -1:
+            bot2_score += 1
+        print(f"{bot1_name}: {bot1_score} - {bot2_name}: {bot2_score}")
+except KeyboardInterrupt:
+    pass
