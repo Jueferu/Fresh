@@ -75,18 +75,15 @@ def build_rocketsim_env():
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
-    agression_bias = .9
+    agression_bias = .5
     concede_reward = -1 * (1 - agression_bias)
     rewards = CombinedReward.from_zipped(
         (EventReward(goal=1, concede=concede_reward), 20),
         (VelocityBallToGoalReward(), 10),
-        (TouchBallRewardScaledByHitForce(), 2.5),
+        (TouchBallRewardScaledByHitForce(), 5),
         (DistributeRewards(KickoffProximityReward(), 1), 20),
-        (BoostPickupReward(), 10),
-        (SaveBoostReward(), 2.5),
+        (DistributeRewards(SpeedflipKickoffReward(), 1), 20),
         (PlayerVelocityReward(), .5),
-        (DistributeRewards(PlayerBehindBallReward(), .5), 5),
-        #(PossesionReward(), 5),
         (DistributeRewards(PlayerFaceBallReward(), 1), .5),
     )
 
