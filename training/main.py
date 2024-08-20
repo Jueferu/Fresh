@@ -78,13 +78,14 @@ def build_rocketsim_env():
     agression_bias = .5
     concede_reward = -1 * (1 - agression_bias)
     rewards = CombinedReward.from_zipped(
-        (EventReward(goal=1, concede=concede_reward), 20),
-        (VelocityBallToGoalReward(), 10),
+        (VelocityBallToGoalReward(), 20),
         (TouchBallRewardScaledByHitForce(), 5),
-        (DistributeRewards(KickoffProximityReward(), 1), 20),
-        (DistributeRewards(SpeedflipKickoffReward(), 1), 20),
-        (PlayerVelocityReward(), .5),
-        (DistributeRewards(PlayerFaceBallReward(), 1), .5),
+        (PlayerFaceBallReward(), .1),
+        (AirReward(), .05),
+        (PlayerIsClosestBallReward(), 1),
+        (PlayerBehindBallReward(), 1),
+        (VelocityPlayerToBallReward(), 2.5),
+        (BoostPickupReward(), 5)
     )
 
     spawn_opponents = True
@@ -125,7 +126,7 @@ if __name__ == "__main__":
 
     n_proc = 32
     min_inference_size = max(1, int(round(n_proc * 0.9)))
-    ts_per_iteration = 200_000
+    ts_per_iteration = 300_000
 
     try:
         checkpoint_load_dir = get_most_recent_checkpoint()
@@ -141,7 +142,7 @@ if __name__ == "__main__":
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
                       exp_buffer_size=ts_per_iteration*3,
-                      ppo_minibatch_size=50_000,
+                      ppo_minibatch_size=100_000,
                       ppo_ent_coef=0.01,
                       ppo_epochs=2,
                       standardize_returns=True,
@@ -150,10 +151,9 @@ if __name__ == "__main__":
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=1e-4,
-                      critic_lr=1e-4,
-                      render=False)
-    
+                      policy_lr=2e-4,
+                      critic_lr=2e-4,
+                      render=True)
     start_time = time.time()
 
     learner.learn()
