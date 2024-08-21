@@ -38,19 +38,7 @@ def build_rocketsim_env():
     from state_setters.shot_state import ShotState
     from rlgym_sim.utils.state_setters import RandomState, DefaultState
 
-    default = WeightedSampleSetter.from_zipped(
-        WallPracticeState(),
-        DribblingStateSetter(),
-        JumpShotState(),
-        SaveShot(),
-        SaveState(),
-        SideHighRoll(),
-        ShotState(),
-        RandomState(True, True, False),
-        DefaultState(),
-        GoaliePracticeState(True, True, False, False),
-        KickoffLikeSetter(False, False),
-    )
+    default = RandomState(True, True, False)
     state_setter = default
     
     from rewards.zero_sum_reward import ZeroSumReward
@@ -75,17 +63,11 @@ def build_rocketsim_env():
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
-    agression_bias = .5
-    concede_reward = -1 * (1 - agression_bias)
     rewards = CombinedReward.from_zipped(
-        (VelocityBallToGoalReward(), 20),
-        (TouchBallRewardScaledByHitForce(), 5),
-        (PlayerFaceBallReward(), .1),
-        (AirReward(), .05),
-        (PlayerIsClosestBallReward(), 1),
-        (PlayerBehindBallReward(), 1),
-        (VelocityPlayerToBallReward(), 2.5),
-        (BoostPickupReward(), 5)
+        (EventReward(touch=1), 50),
+        (VelocityPlayerToBallReward(), 5),
+        (PlayerFaceBallReward(), 1),
+        (AirReward(), 0.15)
     )
 
     spawn_opponents = True
@@ -104,7 +86,7 @@ def build_rocketsim_env():
             ang_coef=1 / np.pi,
             lin_vel_coef=1 / common_values.CAR_MAX_SPEED,
             ang_vel_coef=1 / common_values.CAR_MAX_ANG_VEL, 
-            player_padding=4, 
+            player_padding=3, 
             expanding=False)
 
     env = rlgym_sim.make(tick_skip=tick_skip,
@@ -124,9 +106,9 @@ def build_rocketsim_env():
 if __name__ == "__main__":
     from rlgym_ppo import Learner
 
-    n_proc = 32
+    n_proc = 40
     min_inference_size = max(1, int(round(n_proc * 0.9)))
-    ts_per_iteration = 300_000
+    ts_per_iteration = 50_000
 
     try:
         checkpoint_load_dir = get_most_recent_checkpoint()
@@ -142,7 +124,7 @@ if __name__ == "__main__":
                       ppo_batch_size=ts_per_iteration,
                       ts_per_iteration=ts_per_iteration,
                       exp_buffer_size=ts_per_iteration*3,
-                      ppo_minibatch_size=100_000,
+                      ppo_minibatch_size=25_000,
                       ppo_ent_coef=0.01,
                       ppo_epochs=2,
                       standardize_returns=True,
