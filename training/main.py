@@ -43,7 +43,7 @@ def build_rocketsim_env():
         RandomState(True, True, False),
         DefaultState()
     )
-    state_setter = default
+    state_setter = TeamSizeSetter(1, default)
     
     from rewards.zero_sum_reward import ZeroSumReward
     from rewards.distribute_rewards import DistributeRewards
@@ -73,18 +73,21 @@ def build_rocketsim_env():
 
     rewards = CombinedReward.from_zipped(
         # begginer
-        (TouchBallRewardScaledByHitForce(), 5),
-        (ZeroSumReward(VelocityPlayerToBallReward(), .3, 1), 2.5),
-        (PlayerFaceBallReward(), .5),
-        (AirReward(), 0.05),
+        (TouchBallRewardScaledByHitForce(), 2.5),
+        (ZeroSumReward(VelocityPlayerToBallReward(), .5, 1), 2.5),
+        (PlayerFaceBallReward(), .1),
+        (AirReward(), 0.1),
         # intermediate
-        (VelocityBallToGoalReward(), 15),
+        (VelocityBallToGoalReward(), 20),
         (EventReward(goal=goal_reward, concede=concede_reward), 30),
-        (KickoffProximityReward(), 20),
+        (ZeroSumReward(PlayerIsClosestBallReward(), .5, 1), 10),
+        # advanced
+        (PlayerVelocityReward(), .2),
+        (ZeroSumReward(BoostPickupReward(), .5, 1), 5),
     )
 
     spawn_opponents = True
-    team_size = 1
+    team_size = 3
     tick_skip = 8
 
     no_touch_seconds = 10

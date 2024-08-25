@@ -23,6 +23,7 @@ class ZeroSumReward(RewardFunction):
 
     def reset(self, initial_state: GameState):
         self.child_reward.reset(initial_state)
+        self._rewards_cache = {}
 
     def pre_step(self, state: GameState):
         self.child_reward.pre_step(state)
@@ -80,7 +81,9 @@ class ZeroSumReward(RewardFunction):
         if self._update_next:
             self.update(state, is_final)
             self._update_next = False
-        return self._rewards_cache[player.car_id]
+        
+        reward = self._rewards_cache.get(player.car_id) or 0
+        return reward
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
         return self.get_reward_multi(player, state, previous_action, False)
