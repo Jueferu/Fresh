@@ -15,11 +15,9 @@ PLACEMENT_BOX_Y_OFFSET = 3000
 GOAL_LINE = 5100
 
 YAW_MAX = np.pi
-
-
 class GoaliePracticeState(StateSetter):
 
-    def __init__(self, aerial_only=False, allow_enemy_interference=False, first_defender_in_goal=False,
+    def __init__(self,
                  reset_to_max_boost=True):
         """
         GoaliePracticeState constructor.
@@ -32,11 +30,17 @@ class GoaliePracticeState(StateSetter):
         super().__init__()
         self.team_turn = 0  # swap every reset who's getting shot at
 
-        self.aerial_only = aerial_only
-        self.allow_enemy_interference = allow_enemy_interference
-        self.first_defender_in_goal = first_defender_in_goal
         self.reset_to_max_boost = reset_to_max_boost
-
+        self.randomize()
+        
+    def randomize(self):
+        """
+        Randomizes the state setter parameters
+        """
+        self.aerial_only = rand.choice([True, False])
+        self.allow_enemy_interference = rand.choice([True, False])
+        self.first_defender_in_goal = rand.choice([True, False])
+        
     def reset(self, state_wrapper: StateWrapper):
         """
         Modifies the StateWrapper to set a new shot
@@ -49,6 +53,7 @@ class GoaliePracticeState(StateSetter):
 
         # which team will recieve the next incoming shot
         self.team_turn = (self.team_turn + 1) % 2
+        self.randomize()
 
     def _reset_cars(self, state_wrapper: StateWrapper, team_turn, first_defender_in_goal, allow_enemy_interference,
                     reset_to_max_boost):

@@ -39,10 +39,11 @@ def build_rocketsim_env():
     from rlgym_sim.utils.state_setters import RandomState, DefaultState
 
     default = WeightedSampleSetter.from_zipped(
+        GoaliePracticeState(),
         RandomState(True, True, False),
         DefaultState()
     )
-    state_setter = TeamSizeSetter(1, default)
+    state_setter = default
     
     from rewards.zero_sum_reward import ZeroSumReward
     from rewards.distribute_rewards import DistributeRewards
@@ -67,7 +68,7 @@ def build_rocketsim_env():
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
     goal_reward = 1
-    agression_bias = .5
+    aggression_bias = .5
     concede_reward = -goal_reward * (1 - aggression_bias)
 
     rewards = CombinedReward.from_zipped(
@@ -78,12 +79,12 @@ def build_rocketsim_env():
         (AirReward(), 0.05),
         # intermediate
         (VelocityBallToGoalReward(), 15),
-        (EventReward(goal=goal_reward, concede=concede_reward), 50)
+        (EventReward(goal=goal_reward, concede=concede_reward), 30),
         (KickoffProximityReward(), 20),
     )
 
     spawn_opponents = True
-    team_size = 2
+    team_size = 1
     tick_skip = 8
 
     no_touch_seconds = 10
