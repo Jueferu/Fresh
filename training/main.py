@@ -146,15 +146,15 @@ if __name__ == "__main__":
                       exp_buffer_size=ts_per_iteration*3,
                       ppo_minibatch_size=50_000,
                       ppo_ent_coef=0.01,
-                      ppo_epochs=2,
+                      ppo_epochs=3,
                       standardize_returns=True,
                       standardize_obs=False,
                       save_every_ts=1_000_000,
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=2e-4,
-                      critic_lr=2e-4,
+                      policy_lr=1e-4,
+                      critic_lr=1e-4,
                       render=True)
     start_time = time.time()
 
