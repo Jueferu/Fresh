@@ -64,6 +64,7 @@ def build_rocketsim_env():
     from rewards.boost_pickup_reward import BoostPickupReward
     from rewards.aerial_distance_reward import AerialDistanceReward
     from rewards.dribble_reward import DribbleReward
+    from rewards.aerial_reward import AerialReward
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
@@ -73,18 +74,20 @@ def build_rocketsim_env():
 
     rewards = CombinedReward.from_zipped(
         # begginer
-        (ZeroSumReward(TouchBallRewardScaledByHitForce(), .5, 1), 2.5),
-        (ZeroSumReward(VelocityPlayerToBallReward(), .5, 1), 2.5),
+        (ZeroSumReward(TouchBallRewardScaledByHitForce(), .2, 1), 5),
+        (ZeroSumReward(VelocityPlayerToBallReward(), .2, 1), 10),
         (PlayerFaceBallReward(), .1),
         (AirReward(), 0.05),
         # intermediate
         (VelocityBallToGoalReward(), 20),
-        (EventReward(goal=goal_reward, concede=concede_reward), 30),
-        (ZeroSumReward(PlayerIsClosestBallReward(), 1, 1), 5),
+        (EventReward(team_goal=goal_reward, concede=concede_reward), 50),
+        (ZeroSumReward(PlayerIsClosestBallReward(), .5, 1), 5),
         # advanced
         #(PlayerVelocityReward(), .2),
-        (ZeroSumReward(BoostPickupReward(), .5, 1), 5),
-        (ZeroSumReward(PlayerBehindBallReward(), .5, 1), 5),
+        (ZeroSumReward(BoostPickupReward(), .2, 1), 2.5),
+        (ZeroSumReward(PlayerBehindBallReward(), .2, 1), 5),
+        # master
+        #(ZeroSumReward(AerialReward(), .2, 1), 15)
     )
 
     spawn_opponents = True
@@ -150,8 +153,8 @@ if __name__ == "__main__":
                       policy_layer_sizes=[2048, 2048, 1024, 1024],
                       critic_layer_sizes=[2048, 2048, 1024, 1024],
                       timestep_limit=10e15,
-                      policy_lr=1e-4,
-                      critic_lr=1e-4,
+                      policy_lr=2e-4,
+                      critic_lr=2e-4,
                       render=True)
     start_time = time.time()
 

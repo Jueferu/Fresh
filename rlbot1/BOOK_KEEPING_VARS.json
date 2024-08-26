@@ -1,19 +1,19 @@
 {
-    "cumulative_timesteps": 248755668,
-    "cumulative_model_updates": 16141,
-    "policy_average_reward": 55.711424340393364,
-    "epoch": 2694,
-    "ts_since_last_save": 100004,
+    "cumulative_timesteps": 290971176,
+    "cumulative_model_updates": 18662,
+    "policy_average_reward": 10.50732974708513,
+    "epoch": 3115,
+    "ts_since_last_save": 200084,
     "reward_running_stats": {
         "mean": [
-            15.62089538026636
+            13.792358816798712
         ],
         "var": [
-            2111688196.3824408
+            2350018972.479206
         ],
         "shape": [
             1
         ],
-        "count": 405000
+        "count": 468300
     }
 }
