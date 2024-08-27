@@ -43,7 +43,7 @@ def build_rocketsim_env():
         RandomState(True, True, False),
         DefaultState()
     )
-    state_setter = TeamSizeSetter(1, default)
+    state_setter = default
     
     from rewards.zero_sum_reward import ZeroSumReward
     from rewards.distribute_rewards import DistributeRewards
@@ -65,6 +65,7 @@ def build_rocketsim_env():
     from rewards.aerial_distance_reward import AerialDistanceReward
     from rewards.dribble_reward import DribbleReward
     from rewards.aerial_reward import AerialReward
+    from rewards.energy_reward import EnergyReward
 
     from rlgym_sim.utils.reward_functions.common_rewards import EventReward, LiuDistanceBallToGoalReward
 
@@ -77,21 +78,22 @@ def build_rocketsim_env():
         (ZeroSumReward(TouchBallRewardScaledByHitForce(), .2, 1), 5),
         (ZeroSumReward(VelocityPlayerToBallReward(), .2, 1), 10),
         (PlayerFaceBallReward(), .1),
-        (AirReward(), 0.05),
+        (AirReward(), 0.1),
         # intermediate
         (VelocityBallToGoalReward(), 20),
         (EventReward(team_goal=goal_reward, concede=concede_reward), 50),
-        (ZeroSumReward(PlayerIsClosestBallReward(), .5, 1), 5),
+        (ZeroSumReward(KickoffProximityReward(), .5, 1), 20),
         # advanced
-        #(PlayerVelocityReward(), .2),
+        (EnergyReward(), .5),
         (ZeroSumReward(BoostPickupReward(), .2, 1), 2.5),
         (ZeroSumReward(PlayerBehindBallReward(), .2, 1), 5),
+        (ZeroSumReward(PossesionReward(), .2, 1), 5),
         # master
         #(ZeroSumReward(AerialReward(), .2, 1), 15)
     )
 
     spawn_opponents = True
-    team_size = 3
+    team_size = 1
     tick_skip = 8
 
     no_touch_seconds = 10
